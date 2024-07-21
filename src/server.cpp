@@ -69,9 +69,18 @@ int main(int argc, char** argv) {
     int client_fd = accept(server_fd, (struct sockaddr*)&client_addr, (socklen_t*)&client_addr_len);
     std::cout << "Client connected\n";
 
-    // respond to an HTTP request with a 200 response
-    std::string response = "HTTP/1.1 200 OK\r\n\r\n";
-    send(client_fd, response.c_str(), response.size(), 0);
+    // Read from the client
+    char buffer[1024] = {0};
+    int valread = read(client_fd, buffer, 1024);
+    // if the path is not found, send a 404 error
+    cout << buffer << endl;
+    if (buffer[5] != '/') {
+        std::string response = "HTTP/1.1 404 Not Found\r\n\r\n";
+        send(client_fd, response.c_str(), response.size(), 0);
+    } else {
+        std::string response = "HTTP/1.1 200 OK\r\n\r\n";
+        send(client_fd, response.c_str(), response.size(), 0);
+    }
 
     close(server_fd);
 
