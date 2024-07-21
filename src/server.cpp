@@ -72,8 +72,13 @@ int main(int argc, char** argv) {
     // Read from the client
     char buffer[1024] = {0};
     int valread = read(client_fd, buffer, 1024);
-    std::cout << buffer << std::endl;
-    if (buffer[5] != '/') {
+
+    if (valread < 0) {
+        std::cerr << "read failed\n";
+        return 1;
+    }
+
+    if (buffer[5] != ' ') {
         std::string response = "HTTP/1.1 404 Not Found\r\n\r\n";
         send(client_fd, response.c_str(), response.size(), 0);
     } else {
