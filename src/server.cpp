@@ -72,7 +72,8 @@ int main(int argc, char** argv) {
     // Read from the client
     char buffer[1024] = {0};
     int valread = read(client_fd, buffer, 1024);
-    std::cout << "Received: " << buffer << " (" << valread << " bytes)\n";
+    std::cout << "Buffer: " << buffer << std::endl;
+    std::cout << "Valread" << valread << std::endl;
 
     if (valread < 0) {
         std::cerr << "read failed\n";
@@ -84,10 +85,7 @@ int main(int argc, char** argv) {
     if (buffer[5] == ' ') {
         response = "HTTP/1.1 200 OK\r\n\r\n";
     } else if (buffer[5] == 'e' && buffer[6] == 'c' && buffer[7] == 'h' && buffer[8] == 'o' && buffer[9] == '/') {
-        std::string str = "";
-        for (int i = 10; i < valread; i++) {
-            str += buffer[i];
-        }
+        std::string str = std::string(buffer + 10, valread - 10);
         response = "HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\nContent-Length: " +
                    std::to_string(str.size()) + "\r\n\r\n" + str;
     }
