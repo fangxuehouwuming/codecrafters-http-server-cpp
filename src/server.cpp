@@ -86,7 +86,7 @@ int main(int argc, char** argv) {
     char buffer[1024] = {0};
     int valread = read(client_fd, buffer, 1024);
     std::string request(buffer);
-    std::cout << "Request: " << request << std::endl;
+    std::cerr << "Request: " << request << std::endl;
 
     if (valread < 0) {
         std::cerr << "read failed\n";
