@@ -97,6 +97,7 @@ int main(int argc, char** argv) {
 
     // request = "GET /echo/abc HTTP/1.1\r\nHost: localhost:4221\r\nUser-Agent: curl/7.64.1\r\nAccept: */*\r\n\r\n"
     std::string path = split_message(request, " ")[1];
+    std::cout << "Path" << path << std::endl;
     std::vector<std::string> split_paths = split_message(path, "/");
     if (path == "/") {
         response = "HTTP/1.1 200 OK\r\n\r\n";
