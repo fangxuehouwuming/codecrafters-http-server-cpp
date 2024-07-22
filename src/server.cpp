@@ -85,7 +85,8 @@ int main(int argc, char** argv) {
     // Read from the client
     char buffer[1024] = {0};
     int valread = read(client_fd, buffer, 1024);
-    std::cout << buffer << std::endl;
+    std::string request(buffer);
+    std::cout << request << std::endl;
 
     if (valread < 0) {
         std::cerr << "read failed\n";
@@ -94,8 +95,13 @@ int main(int argc, char** argv) {
 
     std::string response = "HTTP/1.1 404 Not Found\r\n\r\n";
 
-    if (buffer[5] == ' ') {
+    // request = "GET /echo/abc HTTP/1.1\r\nHost: localhost:4221\r\nUser-Agent: curl/7.64.1\r\nAccept: */*\r\n\r\n"
+    std::string path = split_message(request, " ")[1];
+    std::vector<std::string> split_paths = split_message(path, "/");
+    if (path == "/") {
         response = "HTTP/1.1 200 OK\r\n\r\n";
+    } else if (split_paths[1] == "echo") {
+        response = "HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\nContent-Length: " + std::to_string(split_paths[2].length()) + "\r\n\r\n" + split_paths[2];
     }
 
     send(client_fd, response.c_str(), response.size(), 0);
