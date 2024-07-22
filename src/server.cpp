@@ -72,19 +72,27 @@ int main(int argc, char** argv) {
     // Read from the client
     char buffer[1024] = {0};
     int valread = read(client_fd, buffer, 1024);
+    std::cout << "Received: " << buffer << " (" << valread << " bytes)\n";
 
     if (valread < 0) {
         std::cerr << "read failed\n";
         return 1;
     }
 
-    if (buffer[5] != ' ') {
-        std::string response = "HTTP/1.1 404 Not Found\r\n\r\n";
-        send(client_fd, response.c_str(), response.size(), 0);
-    } else {
-        std::string response = "HTTP/1.1 200 OK\r\n\r\n";
-        send(client_fd, response.c_str(), response.size(), 0);
+    std::string response = "HTTP/1.1 404 Not Found\r\n\r\n";
+
+    if (buffer[5] == ' ') {
+        response = "HTTP/1.1 200 OK\r\n\r\n";
+    } else if (buffer[5] == 'e' && buffer[6] == 'c' && buffer[7] == 'h' && buffer[8] == 'o' && buffer[9] == '/') {
+        std::string str = "";
+        for (int i = 10; i < valread; i++) {
+            str += buffer[i];
+        }
+        response = "HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\nContent-Length: " +
+                   std::to_string(str.size()) + "\r\n\r\n" + str;
     }
+
+    send(client_fd, response.c_str(), response.size(), 0);
 
     close(server_fd);
 
