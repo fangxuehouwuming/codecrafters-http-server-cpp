@@ -128,9 +128,10 @@ int main(int argc, char** argv) {
             std::cerr << "accept failed\n";
             continue;  // if accept fails, continue to accept the next client
         }
-        
+
         // create a new thread to handle the client
-        std::thread client_thread(handle_client, client_fd).detach();
+        std::thread client_thread(handle_client, client_fd);
+        client_thread.detach();
     }
 
     close(server_fd);
