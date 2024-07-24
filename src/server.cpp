@@ -8,6 +8,7 @@
 #include <iostream>
 #include <sstream>
 #include <string>
+#include <thread>
 #include <vector>
 
 std::vector<std::string> split_message(const std::string& message, const std::string& delim) {
@@ -19,6 +20,48 @@ std::vector<std::string> split_message(const std::string& message, const std::st
     }
     tokens.push_back(message.substr(start));
     return tokens;
+}
+
+void handle_client(int client_fd) {
+    // Read from the client
+    char buffer[1024] = {0};
+    int valread = read(client_fd, buffer, 1024);
+    std::string request(buffer);
+    std::cout << request << std::endl;
+
+    if (valread < 0) {
+        std::cerr << "read failed\n";
+        return 1;
+    }
+
+    std::string response = "HTTP/1.1 404 Not Found\r\n\r\n";
+
+    // request = "GET /echo/abc HTTP/1.1\r\nHost: localhost:4221\r\nUser-Agent: curl/7.64.1\r\nAccept: */*\r\n\r\n"
+    // GET /echo/abc HTTP/1.1
+    // Host: localhost:4221
+    // User-Agent: curl/7.64.1
+    // Accept: */*
+    std::vector<std::string> seqs = split_message(request, "\r\n");
+
+    std::string get_path = split_message(seqs[0], " ")[1];
+    std::vector<std::string> split_get_path = split_message(get_path, "/");
+
+    std::vector<std::string> split_user_agent = split_message(seqs[2], " ");
+
+    if (get_path == "/") {
+        response = "HTTP/1.1 200 OK\r\n\r\n";
+    } else if (split_get_path[1] == "echo") {
+        response = "HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\nContent-Length: " +
+                   std::to_string(split_get_path[2].length()) + "\r\n\r\n" + split_get_path[2];
+    } else if (split_get_path[1] == "user-agent") {
+        // HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\nContent-Length: 12\r\n\r\nfoobar/1.2.3
+        response = "HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\nContent-Length: " +
+                   std::to_string(split_user_agent[1].length()) + "\r\n\r\n" + split_user_agent[1];
+    }
+
+    send(client_fd, response.c_str(), response.size(), 0);
+
+    close(client_fd);
 }
 
 int main(int argc, char** argv) {
@@ -79,46 +122,16 @@ int main(int argc, char** argv) {
 
     std::cout << "Waiting for a client to connect...\n";
 
-    int client_fd = accept(server_fd, (struct sockaddr*)&client_addr, (socklen_t*)&client_addr_len);
-    std::cout << "Client connected\n";
-
-    // Read from the client
-    char buffer[1024] = {0};
-    int valread = read(client_fd, buffer, 1024);
-    std::string request(buffer);
-    std::cout << request << std::endl;
-
-    if (valread < 0) {
-        std::cerr << "read failed\n";
-        return 1;
+    while (true) {
+        int client_fd = accept(server_fd, (struct sockaddr*)&client_addr, (socklen_t*)&client_addr_len);
+        if (client_fd < 0) {
+            std::cerr << "accept failed\n";
+            continue;  // if accept fails, continue to accept the next client
+        }
+        
+        // create a new thread to handle the client
+        std::thread client_thread(handle_client, client_fd).detach();
     }
-
-    std::string response = "HTTP/1.1 404 Not Found\r\n\r\n";
-
-    // request = "GET /echo/abc HTTP/1.1\r\nHost: localhost:4221\r\nUser-Agent: curl/7.64.1\r\nAccept: */*\r\n\r\n"
-    // GET /echo/abc HTTP/1.1
-    // Host: localhost:4221
-    // User-Agent: curl/7.64.1
-    // Accept: */*
-    std::vector<std::string> seqs = split_message(request, "\r\n");
-
-    std::string get_path = split_message(seqs[0], " ")[1];
-    std::vector<std::string> split_get_path = split_message(get_path, "/");
-
-    std::vector<std::string> split_user_agent = split_message(seqs[2], " ");
-
-    if (get_path == "/") {
-        response = "HTTP/1.1 200 OK\r\n\r\n";
-    } else if (split_get_path[1] == "echo") {
-        response = "HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\nContent-Length: " +
-                   std::to_string(split_get_path[2].length()) + "\r\n\r\n" + split_get_path[2];
-    } else if (split_get_path[1] == "user-agent") {
-        // HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\nContent-Length: 12\r\n\r\nfoobar/1.2.3
-        response = "HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\nContent-Length: " +
-                   std::to_string(split_user_agent[1].length()) + "\r\n\r\n" + split_user_agent[1];
-    }
-
-    send(client_fd, response.c_str(), response.size(), 0);
 
     close(server_fd);
 
