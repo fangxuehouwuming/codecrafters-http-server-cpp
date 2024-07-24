@@ -31,7 +31,7 @@ void handle_client(int client_fd) {
 
     if (valread < 0) {
         std::cerr << "read failed\n";
-        return 1;
+        return;
     }
 
     std::string response = "HTTP/1.1 404 Not Found\r\n\r\n";
