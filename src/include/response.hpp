@@ -6,7 +6,7 @@
 
 class Response {
    public:
-    static Response GenerateResponse(const Request& request);
+    static Response GenerateResponse(const Request& request, const std::string& server_files_dir);
     void Send(int client_fd) const;
 
    private:

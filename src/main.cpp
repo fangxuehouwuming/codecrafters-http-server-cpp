@@ -1,4 +1,5 @@
 #include <iostream>
+#include "include/config.hpp"
 #include "include/server.hpp"
 
 int main(int argc, char** argv) {
@@ -8,7 +9,9 @@ int main(int argc, char** argv) {
 
     std::cout << "Logs from your program will appear here!\n";
 
-    Server server;
+    Config config(argc, argv);
+
+    Server server(config);
     server.Run();
 
     return 0;

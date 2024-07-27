@@ -3,7 +3,7 @@
 #include <unistd.h>
 #include "include/utility.hpp"
 
-Response Response::GenerateResponse(const Request& request) {
+Response Response::GenerateResponse(const Request& request, const std::string& server_files_dir) {
     Response response;
     response.status_line_ = "HTTP/1.1 200 OK\r\n";
     response.content_type_ = "Content-Type: text/plain\r\n";
@@ -16,14 +16,22 @@ Response Response::GenerateResponse(const Request& request) {
     if (path == "/") {
         response.response_ = "HTTP/1.1 200 OK\r\n\r\n";
         return response;
-
     } else if (spilt_path[1] == "echo") {
         response.body_ = spilt_path[2];
         response.content_length_ = response.body_.size();
-
     } else if (spilt_path[1] == "user-agent") {
         response.body_ = request.GetUserAgent();
         response.content_length_ = response.body_.size();
+    } else if (spilt_path[1] == "files") {
+        std::string filename = spilt_path[2];
+        std::ifstream fs(server_files_dir + filename);
+
+        if (fs.is_open()) {
+            std::stringstream buffer;
+            buffer << file.rdbuf();
+            response.body_ = buffer.str();
+            response.content_length_ = response.body_.size();
+        }
 
     } else {
         response.response_ = "HTTP/1.1 404 Not Found\r\n\r\n";
