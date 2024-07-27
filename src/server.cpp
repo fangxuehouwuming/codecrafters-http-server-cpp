@@ -82,7 +82,7 @@ void Server::Run() {
             continue;
         }
 
-        std::thread client_thread(HandleClient, client_fd);
+        std::thread client_thread(&Server::HandleClient, this, client_fd);
         client_thread.detach();
     }
 }
