@@ -29,7 +29,7 @@ Response Response::GenerateResponse(const Request& request, const std::string& s
         std::string server_file_path = server_files_dir + filename;
         std::ifstream file(server_file_path);
 
-        if (fs.is_open()) {
+        if (file.is_open()) {
             std::stringstream buffer;
             buffer << file.rdbuf();
             response.body_ = buffer.str();
