@@ -5,7 +5,7 @@
 
 Response Response::GenerateResponse(const Request& request) {
     Response response;
-    response.status_line_ = "HTTP/1.1 200 OK\r\n\r\n";
+    response.status_line_ = "HTTP/1.1 200 OK\r\n";
     response.content_type_ = "Content-Type: text/plain\r\n";
     response.content_length_ = 0;
     response.body_ = "";
