@@ -5,7 +5,7 @@
 
 Response Response::GenerateResponse(const Request& request) {
     Response response;
-    response.status_line_ = "HTTP/1.1 200 OK\r\n";
+    response.status_line_ = "HTTP/1.1 200 OK\r\n\r\n";
     response.content_type_ = "Content-Type: text/plain\r\n";
     response.content_length_ = 0;
     response.body_ = "";
@@ -14,7 +14,7 @@ Response Response::GenerateResponse(const Request& request) {
     std::vector<std::string> spilt_path = SplitMessage(path, "/");
 
     if (path == "/") {
-        response.response_ = "HTTP/1.1 200 OK\r\n";
+        response.response_ = "HTTP/1.1 200 OK\r\n\r\n";
         return response;
     } else if (spilt_path[1] == "echo") {
         response.body_ = spilt_path[2];
@@ -23,7 +23,7 @@ Response Response::GenerateResponse(const Request& request) {
         response.body_ = request.GetUserAgent();
         response.content_length_ = response.body_.size();
     } else {
-        response.response_ = "HTTP/1.1 404 Not Found\r\n";
+        response.response_ = "HTTP/1.1 404 Not Found\r\n\r\n";
         return response;
     }
 
