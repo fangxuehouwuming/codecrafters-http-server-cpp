@@ -1,6 +1,8 @@
 #include "include/response.hpp"
 #include <netdb.h>
 #include <unistd.h>
+#include <fstream>
+#include <sstream>
 #include "include/utility.hpp"
 
 Response Response::GenerateResponse(const Request& request, const std::string& server_files_dir) {
