@@ -40,7 +40,7 @@ bool Request::Parse(int client_fd) {
     for (const std::string& line : lines) {
         if (line.find("User-Agent:") == 0) {    // if line starts with "User-Agent:"
             std::vector<std::string> user_agent_parts = SplitMessage(line, " ");
-            if (user_agent_parts.size() > 1) {
+            if (user_agent_parts.size() > 0) {
                 user_agent_ = user_agent_parts[1];
             }
         }
