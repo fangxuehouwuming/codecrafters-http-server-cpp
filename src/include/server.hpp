@@ -9,7 +9,7 @@ class Server {
 
    private:
     int CreateServerSocket();
-    static void HandleClient(int client_fd);
+    void HandleClient(int client_fd);
 
     int server_fd_;
     std::string directory_;
