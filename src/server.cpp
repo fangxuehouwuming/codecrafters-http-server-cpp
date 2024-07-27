@@ -14,7 +14,7 @@ const int kConnectionBacklog = 5;
 }  // namespace
 
 Server::Server(const Config& config)
-    : server_fd_(CreateServerSocket(), directory_(config.GetDirectory())) {}
+    : server_fd_(CreateServerSocket()), directory_(config.GetDirectory()) {}
 
 Server::~Server() {
     close(server_fd_);
