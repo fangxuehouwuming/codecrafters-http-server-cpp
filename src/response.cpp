@@ -32,6 +32,7 @@ Response Response::GenerateResponse(const Request& request, const std::string& s
         if (file.is_open()) {
             std::stringstream buffer;
             buffer << file.rdbuf();
+            response.content_type_ = "Content-Type: application/octet-stream\r\n";
             response.body_ = buffer.str();
             response.content_length_ = response.body_.size();
         }
