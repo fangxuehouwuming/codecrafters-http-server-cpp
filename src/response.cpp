@@ -27,7 +27,7 @@ Response Response::GenerateResponse(const Request& request, const std::string& s
     } else if (spilt_path[1] == "files") {
         std::string filename = spilt_path[2];
         std::string server_file_path = server_files_dir + filename;
-        std::ifstream fs(server_file_path);
+        std::ifstream file(server_file_path);
 
         if (fs.is_open()) {
             std::stringstream buffer;
