@@ -11,7 +11,7 @@ Response Response::GenerateResponse(const Request& request) {
     response.body_ = "";
 
     std::string path = request.GetPath();
-    std::string spilt_path = SplitMessage(path, "/");
+    std::vector<std::string> spilt_path = SplitMessage(path, "/");
 
     if (path == "/") {
         response.response_ = "HTTP/1.1 200 OK\r\n";
