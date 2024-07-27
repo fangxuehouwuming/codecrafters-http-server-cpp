@@ -1,4 +1,4 @@
-#include "utility.hpp"
+#include "include/utility.hpp"
 
 std::vector<std::string> SplitMessage(const std::string& message, const std::string& delim) {
     std::vector<std::string> tokens;

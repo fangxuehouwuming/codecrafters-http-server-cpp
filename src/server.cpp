@@ -1,4 +1,4 @@
-#include "server.hpp"
+#include "include/server.hpp"
 #include <arpa/inet.h>
 #include <netdb.h>
 #include <sys/socket.h>
@@ -6,9 +6,8 @@
 #include <unistd.h>
 #include <iostream>
 #include <thread>
-#include "request.hpp"
-#include "response.hpp"
-
+#include "include/request.hpp"
+#include "include/response.hpp"
 namespace {
 const int kPort = 4221;
 const int kConnectionBacklog = 5;

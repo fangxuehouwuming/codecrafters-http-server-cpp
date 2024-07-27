@@ -1,8 +1,8 @@
-#include "request.hpp"
+#include "include/request.hpp"
 #include <unistd.h>
 #include <iostream>
 #include <sstream>
-#include "utility.hpp"
+#include "include/utility.hpp"
 
 namespace {
 const int kBufferSize = 1024;
@@ -38,9 +38,9 @@ bool Request::Parse(int client_fd) {
     path_ = request_line[1];
 
     for (const std::string& line : lines) {
-        if (line.find("User-Agent:") == 0) {    // if line starts with "User-Agent:"
+        if (line.find("User-Agent:") == 0) {  // if line starts with "User-Agent:"
             std::vector<std::string> user_agent_parts = SplitMessage(line, " ");
-            if (user_agent_parts.size() > 0) {
+            if (user_agent_parts.size() > 1) {
                 user_agent_ = user_agent_parts[1];
             }
         }

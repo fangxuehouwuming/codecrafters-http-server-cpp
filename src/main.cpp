@@ -1,5 +1,5 @@
 #include <iostream>
-#include "server.hpp"
+#include "include/server.hpp"
 
 int main(int argc, char** argv) {
     // Flush after every std::cout / std::cerr
