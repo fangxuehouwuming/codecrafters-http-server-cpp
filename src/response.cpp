@@ -35,6 +35,9 @@ Response Response::GenerateResponse(const Request& request, const std::string& s
             response.content_type_ = "Content-Type: application/octet-stream\r\n";
             response.body_ = buffer.str();
             response.content_length_ = response.body_.size();
+        } else {
+            response.response_ = "HTTP/1.1 404 Not Found\r\n\r\n";
+            return response;
         }
 
     } else {
