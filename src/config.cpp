@@ -1,5 +1,5 @@
 
-#include "config.hpp"
+#include "include/config.hpp"
 #include <iostream>
 
 Config::Config(int argc, char** argv) {
