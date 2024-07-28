@@ -40,11 +40,15 @@ Response Response::GenerateResponse(const Request& request, const Config& server
             response.response_ = "HTTP/1.1 404 Not Found\r\n\r\n";
             return response;
         }
+
         if (request.GetHeaders().count("Accept-Encoding") && request.GetHeaders().at("Accept-Encoding") == "gzip") {
             // response.body_ = Gzip::Compress(response.body_);
             response.headers_["Content-Encoding"] = "gzip\r\n";
         }
+        
         response.headers_["Content-Length"] = std::to_string(response.body_.size()) + "\r\n";
+        response.response_ = response.ComposeResponse();
+
     } else if (request.GetMethod() == "POST") {
         if (spilt_path[1] == "files") {
             std::string file_name = spilt_path[2];
@@ -55,8 +59,6 @@ Response Response::GenerateResponse(const Request& request, const Config& server
             response.response_ = "HTTP/1.1 201 Created\r\n\r\n";
         }
     }
-
-    response.response_ = response.ComposeResponse();
     return response;
 }
 
