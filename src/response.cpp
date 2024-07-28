@@ -26,6 +26,7 @@ Response Response::GenerateResponse(const Request& request, const Config& server
         response.content_length_ = response.body_.size();
     } else if (spilt_path[1] == "files") {
         std::string filename = spilt_path[2];
+        std::string server_files_dir = server_config.GetDirectory();
         std::string server_file_path = server_files_dir + filename;
         std::ifstream file(server_file_path);
 
