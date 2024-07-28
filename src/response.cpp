@@ -41,11 +41,18 @@ Response Response::GenerateResponse(const Request& request, const Config& server
             return response;
         }
 
-        if (request.GetHeaders().count("Accept-Encoding") && request.GetHeaders().at("Accept-Encoding") == "gzip") {
+        if (request.GetHeaders().count("Accept-Encoding")) {
             // response.body_ = Gzip::Compress(response.body_);
-            response.headers_["Content-Encoding"] = "gzip\r\n";
+            auto accept_encoding_list = SplitMessage(request.GetHeaders().at("Accept-Encoding"), ", ");
+            for (const auto& accept_encoding : accept_encoding_list) {
+                if (accept_encoding == "gzip") {
+                    // response.body_ = Gzip::Compress(response.body_);
+                    response.headers_["Content-Encoding"] = "gzip\r\n";
+                    break;
+                }
+            }
         }
-        
+
         response.headers_["Content-Length"] = std::to_string(response.body_.size()) + "\r\n";
         response.response_ = response.ComposeResponse();
 
