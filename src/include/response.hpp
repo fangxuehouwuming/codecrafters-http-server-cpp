@@ -1,12 +1,11 @@
 #ifndef RESPONSE_HPP
 #define RESPONSE_HPP
 
-#include <string>
 #include "request.hpp"
 
 class Response {
    public:
-    static Response GenerateResponse(const Request& request, const std::string& server_files_dir);
+    static Response GenerateResponse(const Request& request, const Config& server_config);
     void Send(int client_fd) const;
 
    private:

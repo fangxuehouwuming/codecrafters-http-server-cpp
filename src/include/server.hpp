@@ -3,7 +3,7 @@
 #include "config.hpp"
 class Server {
    public:
-    Server(const Config& config);
+    Server(int argc, char** argv);
     ~Server();
     void Run();
 
@@ -12,7 +12,7 @@ class Server {
     void HandleClient(int client_fd);
 
     int server_fd_;
-    std::string directory_;
+    Config server_config_;
 };
 
 #endif  // SERVER_HPP

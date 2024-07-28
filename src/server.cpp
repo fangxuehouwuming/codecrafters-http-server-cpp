@@ -13,8 +13,8 @@ const int kPort = 4221;
 const int kConnectionBacklog = 5;
 }  // namespace
 
-Server::Server(const Config& config)
-    : server_fd_(CreateServerSocket()), directory_(config.GetDirectory()) {}
+Server::Server(int argc, char** argv)
+    : server_fd_(CreateServerSocket()), server_config_(Config(argc, argv)) {}
 
 Server::~Server() {
     close(server_fd_);
@@ -95,7 +95,7 @@ void Server::HandleClient(int client_fd) {
         return;
     }
 
-    Response response = Response::GenerateResponse(request, directory_);
+    Response response = Response::GenerateResponse(request, server_config_);
     response.Send(client_fd);
 
     close(client_fd);

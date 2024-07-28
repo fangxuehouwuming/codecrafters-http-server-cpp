@@ -5,7 +5,7 @@
 #include <sstream>
 #include "include/utility.hpp"
 
-Response Response::GenerateResponse(const Request& request, const std::string& server_files_dir) {
+Response Response::GenerateResponse(const Request& request, const Config& server_config) {
     Response response;
     response.status_line_ = "HTTP/1.1 200 OK\r\n";
     response.content_type_ = "Content-Type: text/plain\r\n";
