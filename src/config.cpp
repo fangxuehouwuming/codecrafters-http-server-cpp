@@ -10,6 +10,6 @@ Config::Config(int argc, char** argv) {
     }
 }
 
-std::string Config::GetDirectory() const {
+std::string Config::GetDirectory() {
     return directory_;
 }

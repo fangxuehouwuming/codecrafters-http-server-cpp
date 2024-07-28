@@ -6,7 +6,7 @@
 class Config {
    public:
     Config(int argc, char** argv);
-    std::string GetDirectory() const;
+    std::string GetDirectory();
 
    private:
     std::string directory_ = "";

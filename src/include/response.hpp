@@ -2,6 +2,7 @@
 #define RESPONSE_HPP
 
 #include "request.hpp"
+#include "config.hpp"
 
 class Response {
    public:
