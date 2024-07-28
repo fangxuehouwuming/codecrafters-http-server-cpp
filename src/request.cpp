@@ -3,6 +3,7 @@
 #include <iostream>
 #include <sstream>
 #include "include/utility.hpp"
+#include "request.hpp"
 
 namespace {
 const int kBufferSize = 1024;
@@ -43,8 +44,11 @@ bool Request::Parse(int client_fd) {
             if (user_agent_parts.size() > 1) {
                 user_agent_ = user_agent_parts[1];
             }
+            break;
         }
     }
+
+    body_ = lines[lines.size() - 1];
 
     return true;
 }
@@ -59,4 +63,8 @@ const std::string& Request::GetPath() const {
 
 const std::string& Request::GetUserAgent() const {
     return user_agent_;
+}
+
+const std::string& Request::GetBody() const {
+    return body_;
 }
