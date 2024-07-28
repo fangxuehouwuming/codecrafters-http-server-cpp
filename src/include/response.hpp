@@ -14,6 +14,7 @@ class Response {
     std::string status_line_;
     std::unordered_map<std::string, std::string> headers_;
     std::string body_;
+    std::string response_;
 
     std::string ComposeResponse() const;
 };
