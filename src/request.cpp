@@ -3,7 +3,6 @@
 #include <iostream>
 #include <sstream>
 #include "include/utility.hpp"
-#include "request.hpp"
 
 namespace {
 const int kBufferSize = 1024;
