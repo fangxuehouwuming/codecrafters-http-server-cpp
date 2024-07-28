@@ -67,7 +67,7 @@ void Response::Send(int client_fd) const {
 std::string Response::ComposeResponse() const {
     std::string composed_response = status_line_;
     for (const auto& header : headers_) {
-        composed_response += header.first + ": " + header.second + "\r\n";
+        composed_response += header.first + ": " + header.second;
     }
     composed_response += "\r\n" + body_;
     return composed_response;
