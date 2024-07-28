@@ -42,7 +42,6 @@ Response Response::GenerateResponse(const Request& request, const Config& server
         }
 
         if (request.GetHeaders().count("Accept-Encoding")) {
-            response.body_ = Gzip::Compress(response.body_);
             auto accept_encoding_list = SplitMessage(request.GetHeaders().at("Accept-Encoding"), ", ");
             for (const auto& accept_encoding : accept_encoding_list) {
                 if (accept_encoding == "gzip") {
