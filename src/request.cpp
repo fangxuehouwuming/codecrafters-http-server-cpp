@@ -9,11 +9,6 @@ const int kBufferSize = 1024;
 }
 
 bool Request::Parse(int client_fd) {
-    // request = "GET /echo/abc HTTP/1.1\r\nHost: localhost:4221\r\nUser-Agent: curl/7.64.1\r\nAccept: */*\r\n\r\n"
-    // GET /echo/abc HTTP/1.1
-    // Host: localhost:4221
-    // User-Agent: curl/7.64.1
-    // Accept: */*
     char buffer[kBufferSize] = {0};
     int valread = read(client_fd, buffer, kBufferSize);
     if (valread < 0) {
@@ -30,24 +25,30 @@ bool Request::Parse(int client_fd) {
     }
 
     std::vector<std::string> request_line = SplitMessage(lines[0], " ");
-    if (request_line.size() < 2) {
+    if (request_line.size() < 3) {
         return false;
     }
 
     method_ = request_line[0];
     path_ = request_line[1];
+    version_ = request_line[2];
 
-    for (const std::string& line : lines) {
-        if (line.find("User-Agent:") == 0) {  // if line starts with "User-Agent:"
-            std::vector<std::string> user_agent_parts = SplitMessage(line, " ");
-            if (user_agent_parts.size() > 1) {
-                user_agent_ = user_agent_parts[1];
-            }
+    size_t i = 1;
+    for (; i < lines.size(); ++i) {
+        if (lines[i].empty()) {
             break;
+        }
+        size_t pos = lines[i].find(": ");
+        if (pos != std::string::npos) {
+            std::string key = lines[i].substr(0, pos);
+            std::string value = lines[i].substr(pos + 2);
+            headers_[key] = value;
         }
     }
 
-    body_ = lines[lines.size() - 1];
+    if (i < lines.size() - 1) {
+        body_ = lines[i + 1];
+    }
 
     return true;
 }
@@ -60,8 +61,12 @@ const std::string& Request::GetPath() const {
     return path_;
 }
 
-const std::string& Request::GetUserAgent() const {
-    return user_agent_;
+const std::string& Request::GetVersion() const {
+    return version_;
+}
+
+const std::unordered_map<std::string, std::string>& Request::GetHeaders() const {
+    return headers_;
 }
 
 const std::string& Request::GetBody() const {

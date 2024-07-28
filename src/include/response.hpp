@@ -1,8 +1,9 @@
 #ifndef RESPONSE_HPP
 #define RESPONSE_HPP
 
-#include "request.hpp"
+#include <unordered_map>
 #include "config.hpp"
+#include "request.hpp"
 
 class Response {
    public:
@@ -11,10 +12,10 @@ class Response {
 
    private:
     std::string status_line_;
-    std::string content_type_;
-    int content_length_;
+    std::unordered_map<std::string, std::string> headers_;
     std::string body_;
-    std::string response_;
+
+    std::string ComposeResponse() const;
 };
 
 #endif  // RESPONSE_HPP

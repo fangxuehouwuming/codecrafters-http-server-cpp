@@ -8,8 +8,7 @@
 Response Response::GenerateResponse(const Request& request, const Config& server_config) {
     Response response;
     response.status_line_ = "HTTP/1.1 200 OK\r\n";
-    response.content_type_ = "Content-Type: text/plain\r\n";
-    response.content_length_ = 0;
+    response.headers_["Content-Type"] = "text/plain\r\n";
     response.body_ = "";
 
     std::string path = request.GetPath();
@@ -21,39 +20,35 @@ Response Response::GenerateResponse(const Request& request, const Config& server
             return response;
         } else if (spilt_path[1] == "echo") {
             response.body_ = spilt_path[2];
-            response.content_length_ = response.body_.size();
         } else if (spilt_path[1] == "user-agent") {
-            response.body_ = request.GetUserAgent();
-            response.content_length_ = response.body_.size();
+            response.body_ = request.GetHeaders().at("User-Agent");
         } else if (spilt_path[1] == "files") {
             std::string filename = spilt_path[2];
             std::string server_files_dir = server_config.GetDirectory();
             std::string server_file_path = server_files_dir + filename;
             std::ifstream file(server_file_path);
-
             if (file.is_open()) {
                 std::stringstream buffer;
                 buffer << file.rdbuf();
-                response.content_type_ = "Content-Type: application/octet-stream\r\n";
+                response.headers_["Content-Type"] = "application/octet-stream\r\n";
                 response.body_ = buffer.str();
-                response.content_length_ = response.body_.size();
             } else {
                 response.response_ = "HTTP/1.1 404 Not Found\r\n\r\n";
                 return response;
             }
-
         } else {
             response.response_ = "HTTP/1.1 404 Not Found\r\n\r\n";
             return response;
         }
-        response.response_ = response.status_line_ + response.content_type_ +
-                             "Content-Length: " + std::to_string(response.content_length_) + "\r\n\r\n" +
-                             response.body_;
+        if (request.GetHeaders().count("Accept-Encoding") && request.GetHeaders().at("Accept-Encoding") == "gzip") {
+            // response.body_ = Gzip::Compress(response.body_);
+            response.headers_["Content-Encoding"] = "gzip\r\n";
+        }
+        response.headers_["Content-Length"] = std::to_string(response.body_.size()) + "\r\n";
     } else if (request.GetMethod() == "POST") {
         if (spilt_path[1] == "files") {
             std::string file_name = spilt_path[2];
             std::string file_path = server_config.GetDirectory() + file_name;
-            // create a new file with body_ content in file_path
             std::ofstream file(file_path);
             file << request.GetBody();
             file.close();
@@ -61,9 +56,19 @@ Response Response::GenerateResponse(const Request& request, const Config& server
         }
     }
 
+    response.response_ = response.ComposeResponse();
     return response;
 }
 
 void Response::Send(int client_fd) const {
     send(client_fd, response_.c_str(), response_.size(), 0);
+}
+
+std::string Response::ComposeResponse() const {
+    std::string composed_response = status_line_;
+    for (const auto& header : headers_) {
+        composed_response += header.first + ": " + header.second + "\r\n";
+    }
+    composed_response += "\r\n" + body_;
+    return composed_response;
 }
